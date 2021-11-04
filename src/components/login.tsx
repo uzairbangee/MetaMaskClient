@@ -163,21 +163,26 @@ export const Login = () => {
       errorMessage: null,
     });
 
-    try {
       if (checkMetaMaskClient() && account) {
         // const accounts = await window?.ethereum?.request({
         //   method: 'eth_requestAccounts',
         // });
-        let nonce: string = ""
+        let nonce: string = "";
         const address = account;
-        const find: any = await API.graphql({
-          query: getUserAuthData,
-          variables: {input: {publicAddress: address}},
-        })
+        try{
+          const find: any = await API.graphql({
+            query: getUserAuthData,
+            variables: {input: {publicAddress: address}},
+          })
 
-        console.log("find ", find.data.getUserAuthData)
+          console.log("find ", find.data.getUserAuthData)
 
-        if (!find?.data.getUserAuthData.nonce) {
+          nonce = find?.data.getUserAuthData.nonce;
+
+        }
+        catch(err){
+          console.log("err new", err);
+
           const sign: any = await API.graphql({
             query: signup,
             variables: {input: {publicAddress: address}},
@@ -186,9 +191,6 @@ export const Login = () => {
           console.log("sign ", sign.data.sign)
 
           nonce = sign?.data.signup.nonce;
-        }
-        else{
-          nonce = find?.data.getUserAuthData.nonce;
         }
 
         const signature = await library.getSigner(address).signMessage(`My App Auth Service Signing nonce: ${nonce}`)
@@ -272,14 +274,14 @@ export const Login = () => {
           errorMessage: "Metamask isn't installed, Please install Metamask",
         });
       }
-    } catch (error) {
+    // } catch (error) {
 
-      console.log("erorr", error)
-      setData({
-        ...data,
-        isSubmitting: false,
-      });
-    }
+    //   console.log("erorr", error)
+    //   setData({
+    //     ...data,
+    //     isSubmitting: false,
+    //   });
+    // }
   };
 
   return (

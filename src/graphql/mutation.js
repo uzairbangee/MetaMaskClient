@@ -13,11 +13,14 @@ export const getUserAuthData = /* GraphQL */ `
 export const authorizeUser = /* GraphQL */ `
   query authorizeUser($input: authorizeUserInput!) {
     authorizeUser(input: $input) {
-      id
+    payload{
+       username
       firstName
       lastName
-      secretText
-      creationDate
+      publicAddress
+    }
+    iat
+    exp
     }
   }
 `;
